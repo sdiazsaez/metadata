@@ -24,7 +24,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Larangular\\Form\\FormServiceProvider"
+                "Larangular\\Metadata\\MetadataServiceProvider"
             ]
         }
     }
