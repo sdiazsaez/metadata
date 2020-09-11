@@ -7,6 +7,8 @@ use Larangular\Installable\Facades\InstallableConfig;
 
 class Metadata extends Meta {
 
+    protected $touches = ['metable'];
+
     public function __construct(array $attributes = []) {
         parent::__construct($attributes);
         $installableConfig = InstallableConfig::config('Larangular\Metadata\MetadataServiceProvider');
