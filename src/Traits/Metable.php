@@ -17,13 +17,16 @@ trait Metable {
         $m = $this->meta()
                   ->where('key', $key)
                   ->get();
+
         if (count($m) > 1) {
             $this->removeMeta($key);
             $this->addMeta($key, $value);
-        } else {
+        } else if($um = $m->first() && !is_null($um)) {
             $um = $m->first();
             $um->value = $value;
             $um->save();
+        } else {
+            $this->addMeta($key, $value);
         }
         return $this;
     }
