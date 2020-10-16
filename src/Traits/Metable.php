@@ -18,16 +18,21 @@ trait Metable {
                   ->where('key', $key)
                   ->get();
 
-        if (count($m) > 1) {
-            $this->removeMeta($key);
-            $this->addMeta($key, $value);
-        } else if($um = $m->first() && !is_null($um)) {
-            $um = $m->first();
-            $um->value = $value;
-            $um->save();
-        } else {
-            $this->addMeta($key, $value);
+        switch(count($m)) {
+            case 0:
+                $this->addMeta($key, $value);
+                break;
+            case 1:
+                $um = $m->first();
+                $um->value = $value;
+                $um->save();
+                break;
+            default:
+                $this->removeMeta($key);
+                $this->addMeta($key, $value);
+                break;
         }
+
         return $this;
     }
 }
