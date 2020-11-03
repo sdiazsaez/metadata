@@ -13,8 +13,12 @@ trait Metable {
         return $this->morphMany(Metadata::class, 'metable');
     }
 
+    public function metadata() {
+        return $this->morphMany(Metadata::class, 'metable');
+    }
+
     public function addUniqueMeta(string $key, $value) {
-        $m = $this->meta()
+        $m = $this->metadata()
                   ->where('key', $key)
                   ->get();
 
