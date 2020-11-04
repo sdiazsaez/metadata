@@ -2,27 +2,20 @@
 
 namespace Larangular\Metadata\Traits;
 
-use Freshwork\Metable\Traits\Metable as FreshworkMetable;
 use Larangular\Metadata\Models\Metadata;
 
 trait Metable {
-
-    use FreshworkMetable;
 
     public function meta() {
         return $this->morphMany(Metadata::class, 'metable');
     }
 
-    public function metadata() {
-        return $this->morphMany(Metadata::class, 'metable');
-    }
-
-    public function addUniqueMeta(string $key, $value) {
-        $m = $this->metadata()
+    public function addUniqueMeta(string $key, $value): Metable {
+        $m = $this->meta()
                   ->where('key', $key)
                   ->get();
 
-        switch(count($m)) {
+        switch (count($m)) {
             case 0:
                 $this->addMeta($key, $value);
                 break;
@@ -38,5 +31,72 @@ trait Metable {
         }
 
         return $this;
+    }
+
+    public function addMeta($key, $value): Metable {
+        $this->meta()
+             ->create([
+                 'key'   => $key,
+                 'value' => $value,
+             ]);
+
+        return $this;
+    }
+
+    public function getAllMeta(): \Illuminate\Support\Collection {
+        $all = [];
+        foreach ($this->meta as $result) {
+            $all[$result['key']][$result['id']] = $result['value'];
+        }
+        return collect($all);
+    }
+
+    public function loadMeta(): Metable {
+        $this->metadata = $this->getAllMeta();
+
+        return $this;
+    }
+
+    public function getMeta($key, $single = true, $cacheAll = false) {
+        $results = ($cacheAll)
+            ? $this->meta->where('key', $key)
+            : $this->meta()
+                   ->where('key', $key)
+                   ->get();
+
+        $return = [];
+        foreach ($results as $result) {
+            $return[$result['id']] = $result['value'];
+        }
+        $return = collect($return);
+
+        return ($single)
+            ? $return->first()
+            : $return;
+    }
+
+
+    public function removeMeta($key): Metable {
+        $this->meta()
+             ->where('key', $key)
+             ->delete();
+
+        return $this;
+    }
+
+    public function scopeWhereMeta($query, $key, $value) {
+        return $query->whereHas('meta', function ($query) use ($key, $value) {
+            $query->where('key', $key)
+                  ->where('value', $value);
+        });
+
+    }
+
+    public function scopeOrWhereMeta($query, $key, $value) {
+        return $query->orWhereHas('meta', function ($query) use ($key, $value) {
+            $query->where('key', $key)
+                  ->where('value', $value);
+        });
+
     }
 }

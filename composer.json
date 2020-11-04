@@ -8,17 +8,10 @@
             "email": "sdiaz.sz@gmail.com"
         }
     ],
-    "repositories": [
-        {
-            "type"  : "vcs",
-            "url"   : "https://github.com/sdiazsaez/laravel-metable"
-        }
-    ],
     "require": {
         "php": ">=7.1",
         "illuminate/support": "~5.8.0|^6.0|^7.0|^8.0",
         "larangular/support": "^0.1.0|^0.2.0",
-        "freshwork/metable": "dev-master",
         "larangular/installable": "^0.1.0|^0.2.0",
         "larangular/migration-package": "^0.1.0|^0.2.0"
     },
