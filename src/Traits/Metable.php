@@ -10,7 +10,7 @@ trait Metable {
         return $this->morphMany(Metadata::class, 'metable');
     }
 
-    public function addUniqueMeta(string $key, $value): Metable {
+    public function addUniqueMeta(string $key, $value) {
         $m = $this->meta()
                   ->where('key', $key)
                   ->get();
@@ -33,7 +33,7 @@ trait Metable {
         return $this;
     }
 
-    public function addMeta($key, $value): Metable {
+    public function addMeta($key, $value) {
         $this->meta()
              ->create([
                  'key'   => $key,
@@ -43,7 +43,7 @@ trait Metable {
         return $this;
     }
 
-    public function getAllMeta(): \Illuminate\Support\Collection {
+    public function getAllMeta() {
         $all = [];
         foreach ($this->meta as $result) {
             $all[$result['key']][$result['id']] = $result['value'];
@@ -51,7 +51,7 @@ trait Metable {
         return collect($all);
     }
 
-    public function loadMeta(): Metable {
+    public function loadMeta() {
         $this->metadata = $this->getAllMeta();
 
         return $this;
@@ -76,7 +76,7 @@ trait Metable {
     }
 
 
-    public function removeMeta($key): Metable {
+    public function removeMeta($key) {
         $this->meta()
              ->where('key', $key)
              ->delete();
@@ -89,7 +89,6 @@ trait Metable {
             $query->where('key', $key)
                   ->where('value', $value);
         });
-
     }
 
     public function scopeOrWhereMeta($query, $key, $value) {
@@ -97,6 +96,5 @@ trait Metable {
             $query->where('key', $key)
                   ->where('value', $value);
         });
-
     }
 }
