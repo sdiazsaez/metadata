@@ -34,7 +34,8 @@ class Metadata extends Model {
         parent::__construct($attributes);
         $installableConfig = InstallableConfig::config('Larangular\Metadata\MetadataServiceProvider');
         $this->connection = $installableConfig->getConnection('metadata');
-        $this->table = $installableConfig->getName('metadata');
+        $this->table = $this->getConnection()
+                            ->getDatabaseName() . '.' . $installableConfig->getName('metadata');
         $this->timestamps = $installableConfig->getTimestamp('metadata');
     }
 
@@ -48,23 +49,23 @@ class Metadata extends Model {
      * @param $value
      */
     public function setValueAttribute($value): void {
-        $type = gettype($value);
-        if (is_array($value)) {
+        $type = \gettype($value);
+        if (\is_array($value)) {
             $this->type = "array";
             $this->attributes['value'] = json_encode($value);
-        } elseif ($value instanceof DateTime) {
+        } elseif ($value instanceof \DateTime) {
             $this->type = "datetime";
             $this->attributes['value'] = $this->fromDateTime($value);
         } elseif ($value instanceof Model) {
             $this->type = "model";
-            $this->attributes['value'] = get_class($value) . (!$value->exists
+            $this->attributes['value'] = \get_class($value) . (!$value->exists
                     ? ''
                     : '#' . $value->getKey());
-        } elseif (is_object($value)) {
+        } elseif (\is_object($value)) {
             $this->type = "object";
             $this->attributes['value'] = json_encode($value);
         } else {
-            $this->type = in_array($type, $this->dataTypes)
+            $this->type = \in_array($type, $this->dataTypes, true)
                 ? $type
                 : 'string';
             $this->attributes['value'] = $value;
@@ -93,7 +94,7 @@ class Metadata extends Model {
                 return with(new $class)->findOrFail($id);
             }
         }
-        if (in_array($type, $this->dataTypes, true)) {
+        if (\in_array($type, $this->dataTypes, true)) {
             settype($value, $type);
         }
         return $value;
